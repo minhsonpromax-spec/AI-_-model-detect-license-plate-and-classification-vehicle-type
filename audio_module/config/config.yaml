@@ -1,0 +1,23 @@
+ocsvm_model_path: "models/ocsvm_pipeline1.pkl"
+cnn_model_path:   "models/gasoline_classifier_v3.h5"
+
+sample_rate: 16000
+fmax: 8000
+hop_length: 256
+n_mels: 128
+target_frames: 64
+
+window_duration: 2.0
+window_stride: 1.0
+
+class_label_map:
+  0: "noise"
+  1: "gasoline"
+
+w_vision: 0.6
+w_audio:  0.4
+
+delta: 0.20
+
+# Debug: bỏ qua OCSVM gate → CNN chạy trực tiếp trên mọi cửa sổ
+bypass_ocsvm: true

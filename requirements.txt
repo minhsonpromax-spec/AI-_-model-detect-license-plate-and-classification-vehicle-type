@@ -1,0 +1,21 @@
+# ── Computer Vision ───────────────────────────────────────────────────────────
+ultralytics          # YOLO detect biển số + classify xăng/điện
+opencv-python        # đọc video, hiển thị frame
+
+# ── Audio ─────────────────────────────────────────────────────────────────────
+librosa              # xử lý âm thanh, extract features, PCEN mel-spectrogram
+soundfile            # librosa cần cái này để đọc .wav
+scipy                # fallback resample nếu librosa lỗi
+
+# ── AI Models ─────────────────────────────────────────────────────────────────
+tensorflow           # CNN model .h5 (gasoline_classifier_v3.h5)
+joblib               # load OCSVM model .pkl (ocsvm_pipeline1.pkl)
+scikit-learn         # OCSVM model dùng sklearn bên trong
+
+# ── HTTP / API ─────────────────────────────────────────────────────────────────
+requests             # gửi kết quả lên BE server
+urllib3              # requests dùng urllib3 bên trong (retry logic)
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
+numpy                # mảng số (dùng xuyên suốt toàn bộ pipeline)
+pyyaml               # đọc file config.yaml

@@ -1,0 +1,23 @@
+# Bỏ qua các file python compiled
+**/*.pyc
+**/__pycache__/
+
+# Bỏ qua các file dữ liệu nặng (Weights, Models)
+**/*.h5
+**/*.pth
+**/*.onnx
+**/*.pb
+
+# Bỏ qua các file hình ảnh và media
+**/*.jpg
+**/*.jpeg
+**/*.png
+**/*.gif
+**/*.mp4
+
+# Bỏ qua các thư mục build hoặc môi trường ảo
+venv/
+.venv/
+node_modules/
+dist/
+build/
