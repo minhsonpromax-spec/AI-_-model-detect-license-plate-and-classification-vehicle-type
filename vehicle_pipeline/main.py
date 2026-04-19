@@ -1,17 +1,8 @@
-"""
-Entry point: orchestrate toàn bộ pipeline.
-
-Chạy:
-    python -m vehicle_pipeline.main
-    # hoặc
-    python vehicle_pipeline/main.py
-"""
-
 from __future__ import annotations
 
 import logging
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import List
 
@@ -20,6 +11,7 @@ import numpy as np
 
 # Thêm root của audio_model vào sys.path để import được api.audio_engine
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+# parents[1] là thư mục cha của thư mục chứa code đó, tức là thư mục cha của thư mục vehicle_pipeline
 
 from audio_module import AudioEngine
 
@@ -29,6 +21,16 @@ from vehicle_pipeline.config import PipelineConfig
 from vehicle_pipeline.event_manager import EventManager, EventState
 from vehicle_pipeline.plate_pipeline import PlatePipeline
 from vehicle_pipeline.vision_classifier import RealVisionClassifier
+
+
+def _effective_bypass_ocsvm(config: PipelineConfig) -> bool:
+    """Giống logic trong run(): CLI `--bypass-ocsvm` nếu có, không thì đọc từ audio_config YAML."""
+    ovr = getattr(config, "_audio_cfg_override", None)
+    if ovr is not None:
+        return bool(ovr.bypass_ocsvm)
+    from audio_module.config.config import AudioModuleConfig
+
+    return bool(AudioModuleConfig.from_yaml(config.audio_config).bypass_ocsvm)
 
 
 @dataclass
@@ -108,6 +110,7 @@ def run(config: PipelineConfig) -> None:
     log.info("Video: %s  |  FPS=%.1f  |  Press Q to quit", config.video_path, fps)
 
     frame_count = 0
+    # vẫn dùng cho real time đc
 
     # ════════════════════════════════════════════════════════════════════════════
     # MAIN LOOP
@@ -199,7 +202,7 @@ def run(config: PipelineConfig) -> None:
     cap.release()
     cv2.destroyAllWindows()
     log.info("Pipeline kết thúc.")
-    _print_stats(stats_list, log)
+    _print_stats(stats_list, log, config)
 
 
 # ════════════════════════════════════════════════════════════════════════════════
@@ -343,10 +346,17 @@ def _process_event(
 
 # ── Stats printer ─────────────────────────────────────────────────────────────
 
-def _print_stats(stats_list: List[EventStats], log: logging.Logger) -> None:
+def _print_stats(
+    stats_list: List[EventStats],
+    log: logging.Logger,
+    config: PipelineConfig,
+) -> None:
     if not stats_list:
         log.info("[Stats] Không có event nào được xử lý.")
         return
+
+    is_bypass = _effective_bypass_ocsvm(config)
+    bypass_tag = "ON" if is_bypass else "OFF"
 
     W = 70
     div  = "═" * W
@@ -354,7 +364,10 @@ def _print_stats(stats_list: List[EventStats], log: logging.Logger) -> None:
 
     log.info("")
     log.info(div)
-    log.info("  THỐNG KÊ KẾT QUẢ PIPELINE  (bypass_ocsvm=ON)")
+    log.info(
+        "  THỐNG KÊ KẾT QUẢ PIPELINE  (bypass_ocsvm=%s)",
+        bypass_tag,
+    )
     log.info(div)
 
     for i, s in enumerate(stats_list, 1):
@@ -370,9 +383,9 @@ def _print_stats(stats_list: List[EventStats], log: logging.Logger) -> None:
         log.info("  [Audio - OCSVM]")
         log.info("    Inlier      : %d cửa sổ", s.ocsvm_inlier)
         log.info("    Outlier     : %d cửa sổ  (bình thường nếu audio từ mp4)", s.ocsvm_outlier)
-        log.info("  [Audio - CNN]  (bypass=ON: chạy cả outlier window)")
-        log.info("    Gas (all)   : %.3f  ← dùng khi bypass", s.cnn_gas_bypass)
-        log.info("    Gas (inlier): %.3f  ← dùng khi không bypass", s.cnn_gas_mean)
+        log.info("  [Audio - CNN]  (bypass=%s)", bypass_tag)
+        log.info("    Gas (all)   : %.3f  ← mọi cửa sổ (khi bypass=ON, CNN chạy cả outlier)", s.cnn_gas_bypass)
+        log.info("    Gas (inlier): %.3f  ← chỉ inlier (khớp aggregate/Fusion khi bypass=OFF)", s.cnn_gas_mean)
         log.info("    Audio gate  : %.1f   |  Entropy: %.3f", s.audio_gate, s.entropy)
         log.info("")
         log.info("  [Fusion]")

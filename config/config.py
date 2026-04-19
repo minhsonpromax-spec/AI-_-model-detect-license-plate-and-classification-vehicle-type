@@ -32,8 +32,8 @@ class AudioModuleConfig:
     )
 
     # Trọng số fusion (ưu tiên vision hay audio hơn)
-    w_vision: float = 0.6             # trọng số ưu tiên vision
-    w_audio: float = 0.4              # trọng số ưu tiên audio
+    w_vision: float = 0.6            # trọng số ưu tiên vision
+    w_audio: float = 0.4            # trọng số ưu tiên audio
 
     # Ngưỡng quyết định (nếu |score_gasoline - score_electric| < delta → "uncertain")
     delta: float = 0.20

@@ -6,7 +6,7 @@ from dataclasses import dataclass
 @dataclass
 class PipelineConfig:
     # ── Video source ─────────────────────────────────────────────────────────
-    video_path: str = r"D:\zalo_cloud\xe6.mp4"
+    video_path: str = r"E:\video_ket_qua.mp4"
 
     # ── Frame processing ──────────────────────────────────────────────────────
     frame_skip: int = 2               # xử lý 1 frame trong mỗi N frame

@@ -38,9 +38,7 @@ from ..aggregation.audio_aggregation import AggregatedAudio
 from ..config.config import AudioModuleConfig
 
 
-# ---------------------------------------------------------------------------
 # Result dataclass
-# ---------------------------------------------------------------------------
 
 @dataclass(frozen=True)
 class FusionResult:
@@ -72,9 +70,8 @@ class FusionResult:
         }
 
 
-# ---------------------------------------------------------------------------
 # FusionEngine
-# ---------------------------------------------------------------------------
+
 
 class FusionEngine:
     """

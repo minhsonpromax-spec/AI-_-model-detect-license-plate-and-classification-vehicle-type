@@ -154,9 +154,9 @@ class PlatePipeline:
         if len(self._recent) < min_streak:
             return None
         tail_prefixes = [
-            self._plate_prefix(t) for t, _ in list(self._recent)[-min_streak:]
+            self._plate_prefix(t) for t, _ in list[tuple[str, float]](self._recent)[-min_streak:]
         ]
-        if len(set(tail_prefixes)) == 1:
+        if len(set[str](tail_prefixes)) == 1:
             return tail_prefixes[0]
         return None
 

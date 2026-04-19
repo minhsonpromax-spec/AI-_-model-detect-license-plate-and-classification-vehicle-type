@@ -20,4 +20,4 @@ w_audio:  0.4
 delta: 0.20
 
 # Debug: bỏ qua OCSVM gate → CNN chạy trực tiếp trên mọi cửa sổ
-bypass_ocsvm: true
+bypass_ocsvm: false

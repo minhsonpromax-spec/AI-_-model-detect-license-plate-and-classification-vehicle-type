@@ -2,13 +2,8 @@
 Interface phân loại xăng/điện từ hình ảnh đuôi xe (Vision).
 
 Cách dùng:
-    - Hiện tại: dùng PlaceholderVisionClassifier (return 50/50 uncertainty)
-    - Khi có model thật: implement RealVisionClassifier, load model vào,
-      rồi thay PlaceholderVisionClassifier bằng RealVisionClassifier trong main.py.
+    - Khi có model thật: implement RealVisionClassifier, load model vào.
 
-Contract của predict():
-    Input  : numpy array (H, W, 3) — BGR frame từ OpenCV
-    Output : dict {"gasoline": float, "electric": float}  — tổng = 1.0
 """
 
 from __future__ import annotations
@@ -23,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class BaseVehicleTypeVision(ABC):
-    """Abstract interface. Mọi implementation đều phải implement predict()."""
+    # “Bất kỳ class nào kế thừa tao thì PHẢI có hàm predict() với format này”
 
     @abstractmethod
     def predict(self, frame: np.ndarray) -> dict[str, float]:
@@ -42,7 +37,7 @@ class BaseVehicleTypeVision(ABC):
 class PlaceholderVisionClassifier(BaseVehicleTypeVision):
     """
     Trả về 0.5 / 0.5 cho đến khi có model thật.
-    FusionEngine sẽ dựa nhiều hơn vào audio trong trường hợp này.
+    FusionEngine sẽ dựa nhiều hơn vào vision trong trường hợp này.
     """
 
     def predict(self, frame: np.ndarray) -> dict[str, float]:

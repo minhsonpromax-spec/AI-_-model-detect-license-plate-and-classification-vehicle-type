@@ -19,3 +19,5 @@ urllib3              # requests dùng urllib3 bên trong (retry logic)
 # ── Utilities ─────────────────────────────────────────────────────────────────
 numpy                # mảng số (dùng xuyên suốt toàn bộ pipeline)
 pyyaml               # đọc file config.yaml
+
+# chạy install : pip install -r requirements.txt
