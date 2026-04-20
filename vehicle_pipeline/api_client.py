@@ -37,6 +37,13 @@ class ApiClient:
         self._session.mount("http://", adapter)
         self._session.mount("https://", adapter)
 
+    # Mapping nhãn nội bộ → giá trị vehicleType gửi lên API
+    _VEHICLE_TYPE_MAP: dict = {
+        "gasoline":  "GAS",
+        "electric":  "ELEC",
+        "uncertain": "UNCERTAIN",
+    }
+
     def send_vehicle_event(
         self,
         plate: str,
@@ -55,9 +62,9 @@ class ApiClient:
             True nếu gửi thành công (HTTP 2xx), False nếu thất bại.
         """
         payload: dict = {
-            "plate": plate,
-            "vehicle_type": vehicle_type,
-            "timestamp": time.time(),
+            "licensePlate": plate,
+            "timeStamp": int(time.time() * 1000),
+            "vehicleType": self._VEHICLE_TYPE_MAP.get(vehicle_type, vehicle_type.upper()),
         }
         if extra:
             payload.update(extra)
