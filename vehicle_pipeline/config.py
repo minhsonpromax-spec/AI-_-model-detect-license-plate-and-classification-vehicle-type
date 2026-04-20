@@ -35,6 +35,6 @@ class PipelineConfig:
     debug_audio_dir: str = "debug_audio"      # thư mục chứa .wav debug (t tự clear)
 
     # ── API ───────────────────────────────────────────────────────────────────
-    api_url: str = "http://your-api.com/vehicle-events"
+    api_url: str = "https://aibuildingmanager.online"
     api_timeout: float = 5.0
     api_retries: int = 2

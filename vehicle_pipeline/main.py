@@ -430,7 +430,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Vehicle Entry Pipeline")
     parser.add_argument("--video",         default="video/test.mp4",   help="Đường dẫn file mp4")
     parser.add_argument("--audio-config",  default="audio_module/config/config.yaml", help="Config audio_model")
-    parser.add_argument("--api-url",       default="http://your-api.com/vehicle-events")
+    parser.add_argument("--api-url",       default="https://aibuildingmanager.online")
     parser.add_argument("--bypass-ocsvm",  default=None, choices=["true", "false"],
                         help="Override bypass_ocsvm trong config (true=debug mp4, false=production mic)")
     args = parser.parse_args()
