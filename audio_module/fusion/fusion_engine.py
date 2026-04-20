@@ -2,10 +2,11 @@
 Two-class fusion engine: combines vision and audio signals into a
 final "gasoline" / "electric" / "uncertain" decision.
 
-Formula
--------
-    S_gasoline = w_V * V_gasoline + w_A * A_gasoline * (1 - H) * gate
-    S_electric = w_V * V_electric + w_A * A_noise    * (1 - H) * gate
+Formula  (Bayesian-Inspired Dynamic Weighting)
+----------------------------------------------
+    w_A_eff   = w_A * (1 - H^2) * gate
+    S_gasoline = (w_V * V_gasoline + w_A_eff * A_gasoline) / (w_V + w_A_eff)
+    S_electric = (w_V * V_electric + w_A_eff * A_noise)    / (w_V + w_A_eff)
 
 Where:
     V_*    — vision score for class (from vision_summary dict)
@@ -15,6 +16,13 @@ Where:
     gate   — audio_gate  ∈ {0.0, 1.0}
     w_V    — vision weight  (from config)
     w_A    — audio weight   (from config)
+
+Rationale:
+* Quadratic entropy penalty (1 - H^2) is gentler for mild noise and only
+  punishes heavily when entropy is truly high (Bayesian-inspired weighting).
+* (1 - H^2) is applied to BOTH numerator and denominator so the score
+  tracks the more confident modality instead of being averaged down.
+* Denominator is always >= w_V > 0 (safety: never division by zero).
 
 Decision rule:
     if |S_gasoline - S_electric| < delta  →  "uncertain"
@@ -126,11 +134,16 @@ class FusionEngine:
         w_V = self._cfg.w_vision
         w_A = self._cfg.w_audio
 
-        # ── Core fusion formula ──────────────────────────────────────────────
-        audio_contrib = (1.0 - H) * gate
+        # ── Core fusion formula (Bayesian-Inspired Dynamic Weighting) ────────
+        # Quadratic entropy penalty: (1 - H^2) is lenient on mild noise but
+        # collapses to 0 only when entropy saturates. Applied symmetrically
+        # to numerator and denominator so the score follows the more
+        # confident modality instead of being averaged down.
+        w_A_eff = w_A * (1.0 - H * H) * gate
+        denom = w_V + w_A_eff  # >= w_V > 0  (safety: never zero)
 
-        S_gasoline = w_V * V_gasoline + w_A * A_gasoline * audio_contrib
-        S_electric = w_V * V_electric + w_A * A_noise * audio_contrib
+        S_gasoline = (w_V * V_gasoline + w_A_eff * A_gasoline) / denom
+        S_electric = (w_V * V_electric + w_A_eff * A_noise) / denom
 
         # ── Decision ─────────────────────────────────────────────────────────
         gap = abs(S_gasoline - S_electric)

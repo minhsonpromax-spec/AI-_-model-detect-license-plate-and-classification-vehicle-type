@@ -8,10 +8,10 @@
 #    .\run.ps1 -Video "E:\video_ket_qua.mp4" -BypassOcsvm false
 #    .\run.ps1 -Video "E:\video_ket_qua.mp4" -ApiUrl "http://192.168.1.10/api/events"
 # ============================================================
-
+#elec 2,4 lỗi, elec5-hard tốt nhất, gas3,4 không tốt, gas2 tốt
 param(
-    [string]$Video        = "D:\Wind\KHKT\data test\gas1.mp4",
-    [string]$ApiUrl       = "http://your-api.com/vehicle-events",
+    [string]$Video        = "D:\Wind\KHKT\data test\gas5.mp4",
+    [string]$ApiUrl       = "https://aibuildingmanager.online",
     # "true"  = bypass OCSVM (dùng khi test với file mp4)
     # "false" = dùng OCSVM thật (dùng khi chạy với mic thật ở cổng)
     [ValidateSet("true","false")]
